@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myApp.WeatherPageController">
+   <children>
+      <StackPane prefHeight="150.0" prefWidth="200.0">
+         <children>
+            <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="815.0">
+               <children>
+                  <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutY="76.0" prefHeight="469.0" prefWidth="827.0" vbarPolicy="NEVER">
+                     <content>
+                        <FlowPane fx:id="cityInfoPane" prefHeight="559.0" prefWidth="947.0" />
+                     </content>
+                  </ScrollPane>
+                  <TextField fx:id="searchBar" layoutX="183.0" layoutY="16.0" onKeyPressed="#search" onMouseClicked="#enterSearchBar" prefHeight="40.0" prefWidth="450.0" text="Search for your city">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </TextField>
+                  <Button fx:id="searchButton" layoutX="633.0" layoutY="14.0" mnemonicParsing="false" onAction="#searchByButton" prefHeight="47.0" prefWidth="57.0">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@searchicon.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <ImageView fx:id="logoImg" fitHeight="62.0" fitWidth="88.0" layoutX="6.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@logo.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="detailPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="686.0" style="-fx-background-color: #ffffff;">
+               <children>
+                  <Label fx:id="detailCityLabel" alignment="CENTER" layoutX="61.0" layoutY="22.0" prefHeight="53.0" prefWidth="566.0" text="City">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="closeDetails" fitHeight="28.0" fitWidth="27.0" layoutX="652.0" layoutY="8.0" onMouseClicked="#hideDetails" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@close.png" />
+                     </image>
+                  </ImageView>
+                  <LineChart fx:id="weatherDataGraph" layoutX="1.0" layoutY="78.0" prefHeight="327.0" prefWidth="686.0">
+                    <xAxis>
+                      <CategoryAxis fx:id="dateAxis" side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis fx:id="temperatureAxis" lowerBound="-50.0" side="LEFT" upperBound="50.0" />
+                    </yAxis>
+                  </LineChart>
+               </children>
+            </AnchorPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>
