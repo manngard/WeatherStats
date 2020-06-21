@@ -7,10 +7,7 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -180,7 +177,7 @@ public class WeatherPageController implements Initializable {
 
         weatherDataGraph.getData().clear();
         detailCityLabel.setText(data.getCityName());
-        XYChart.Series series = new XYChart.Series();
+        XYChart.Series <String,Number> series = new XYChart.Series();
         series.setName(data.getCityName());
 
         Collection<Pair<String, Number>> weatherhistory = handler.getHistory(data.getCityName());
@@ -191,8 +188,11 @@ public class WeatherPageController implements Initializable {
         }
 
         for (Pair p : weatherhistory) {
-            series.getData().add(new XYChart.Data(p.getKey(), p.getValue()));
+            XYChart.Data datapoint = new XYChart.Data(p.getKey(), p.getValue());
+            series.getData().add(datapoint);
         }
+
+
 
         //fortsätt med pair här
 
@@ -215,6 +215,13 @@ public class WeatherPageController implements Initializable {
         series.getData().add(new XYChart.Data("Nov", 29));
         series.getData().add(new XYChart.Data("Dec", 25));*/
         weatherDataGraph.getData().add(series);
+
+        for (XYChart.Data<String,Number> entry : series.getData()) {
+            Tooltip t = new Tooltip(entry.getXValue());
+            Tooltip.install(entry.getNode(), t);
+
+        }
+
         detailContainerPane.toFront();
     }
 
