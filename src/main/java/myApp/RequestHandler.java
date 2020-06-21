@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import javafx.util.Pair;
+import myApp.Pair;
 import kotlin.Triple;
 import myApp.TemperatureData.WeatherData;
 import okhttp3.HttpUrl;
@@ -25,16 +25,7 @@ public class RequestHandler {
     OkHttpClient client = new OkHttpClient();
     Map<String,WeatherData> weatherLocations = new HashMap<>();
     Map<String,WeatherData> favorites = new HashMap<>();
-    Set<Triple<String,String,Number>> history = new TreeSet<>(new Comparator<Triple>() {
-        @Override
-        public int compare(Triple t1, Triple t2) {
-            System.out.println(t1.getFirst().toString().compareTo(t2.getFirst().toString()));
-            return t1.getFirst().toString().compareTo(t2.getFirst().toString())
-                    + t1.getSecond().toString().compareTo(t2.getSecond().toString());
-        }
-    });
-    /*File cache = null;*/
-
+    Set<Triple<String,String,Number>> history = new HashSet<>();
 
     String GET(String url, String location){
         HttpUrl.Builder httpBuilder = HttpUrl.parse(url).newBuilder();
@@ -128,7 +119,7 @@ public class RequestHandler {
         return favorites.values();
     }
 
-    public Collection<Pair<String,Number>> getHistory(String city) {
+    public Collection<myApp.Pair<String, Number>> getHistory(String city) {
         List <Pair<String,Number>> cityHistory = new ArrayList<>();
         for (Triple <String,String,Number> t : history){
             if (city.equals(t.getFirst())){

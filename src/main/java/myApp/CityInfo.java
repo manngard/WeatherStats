@@ -101,7 +101,7 @@ public class CityInfo extends AnchorPane {
 
     @FXML
     void openDetails() {
-        parentController.showDetails(weather);
+        parentController.showDetails(weather.getCityName());
     }
 
     public CityInfo(WeatherData weather, WeatherPageController weatherPageController, boolean favorite) {
