@@ -14,11 +14,36 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myApp.WeatherPageController">
    <children>
       <StackPane prefHeight="150.0" prefWidth="200.0">
          <children>
+            <AnchorPane fx:id="detailContainerPane" onMouseClicked="#hideDetails" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <AnchorPane fx:id="detailPane" layoutX="100.0" layoutY="135.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#ignoreClick" prefHeight="350.0" prefWidth="600.0" style="-fx-background-color: #ffffff;">
+                     <children>
+                        <Label fx:id="detailCityLabel" alignment="CENTER" layoutX="13.0" layoutY="23.0" prefHeight="53.0" prefWidth="573.0" text="City">
+                           <font>
+                              <Font size="36.0" />
+                           </font>
+                        </Label>
+                        <ImageView fx:id="closeDetails" fitHeight="28.0" fitWidth="27.0" layoutX="565.0" layoutY="10.0" onMouseClicked="#hideDetails" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@close.png" />
+                           </image>
+                        </ImageView>
+                        <LineChart fx:id="weatherDataGraph" layoutX="1.0" layoutY="65.0" prefHeight="282.0" prefWidth="600.0">
+                          <xAxis>
+                            <CategoryAxis fx:id="dateAxis" side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis fx:id="temperatureAxis" lowerBound="-50.0" side="LEFT" upperBound="50.0" />
+                          </yAxis>
+                        </LineChart>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
             <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="815.0">
                <children>
                   <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutY="76.0" prefHeight="469.0" prefWidth="827.0" vbarPolicy="NEVER">
@@ -48,28 +73,6 @@
                         <Image url="@logo.png" />
                      </image>
                   </ImageView>
-               </children>
-            </AnchorPane>
-            <AnchorPane fx:id="detailPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="686.0" style="-fx-background-color: #ffffff;">
-               <children>
-                  <Label fx:id="detailCityLabel" alignment="CENTER" layoutX="61.0" layoutY="22.0" prefHeight="53.0" prefWidth="566.0" text="City">
-                     <font>
-                        <Font size="36.0" />
-                     </font>
-                  </Label>
-                  <ImageView fx:id="closeDetails" fitHeight="28.0" fitWidth="27.0" layoutX="652.0" layoutY="8.0" onMouseClicked="#hideDetails" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@close.png" />
-                     </image>
-                  </ImageView>
-                  <LineChart fx:id="weatherDataGraph" layoutX="1.0" layoutY="78.0" prefHeight="327.0" prefWidth="686.0">
-                    <xAxis>
-                      <CategoryAxis fx:id="dateAxis" side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis fx:id="temperatureAxis" lowerBound="-50.0" side="LEFT" upperBound="50.0" />
-                    </yAxis>
-                  </LineChart>
                </children>
             </AnchorPane>
          </children>

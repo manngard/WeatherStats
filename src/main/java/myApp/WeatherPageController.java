@@ -17,6 +17,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
+import javafx.util.Pair;
 import myApp.TemperatureData.WeatherData;
 
 import java.net.URL;
@@ -45,6 +46,9 @@ public class WeatherPageController implements Initializable {
     private AnchorPane detailPane;
 
     @FXML
+    private AnchorPane detailContainerPane;
+
+    @FXML
     private ScrollPane scrollPane;
 
     @FXML
@@ -64,12 +68,17 @@ public class WeatherPageController implements Initializable {
 
     @FXML
     public void hideDetails() {
-        detailPane.toBack();
+        detailContainerPane.toBack();
+    }
+
+    @FXML
+    public void ignoreClick(MouseEvent event){
+        event.consume();
     }
 
     @FXML
     void enterSearchBar(MouseEvent event) {
-        if (errorMessages.contains(searchBar.getText())){
+        if (errorMessages.contains(searchBar.getText())) {
             searchBar.setText("");
             searchBar.setStyle("-fx-text-fill: black;");
         }
@@ -82,28 +91,25 @@ public class WeatherPageController implements Initializable {
 
     @FXML
     void search(KeyEvent event) {
-        if (event.getCode() == KeyCode.ENTER){
+        if (event.getCode() == KeyCode.ENTER) {
             searchQuery();
         }
     }
 
-    void searchQuery(){
-        try{
+    void searchQuery() {
+        try {
             handler.createWeatherDataObject("https://api.openweathermap.org/data/2.5/forecast", searchBar.getText());
             populateCityInfoPane();
-        }
-        catch(JsonSyntaxException e){
+        } catch (JsonSyntaxException e) {
             searchBar.setText(cityNotFoundErrorMessage);
             searchBar.setStyle("-fx-text-fill: red;");
             cityInfoPane.requestFocus();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             searchBar.setText(cityAlreadyAddedErrorMessage);
             searchBar.setStyle("-fx-text-fill: red;");
             cityInfoPane.requestFocus();
         }
     }
-
 
 
     @Override
@@ -137,48 +143,62 @@ public class WeatherPageController implements Initializable {
         scrollPane.setFitToHeight(true);
     }
 
-    private void populateCityInfoPane(){
+    private void populateCityInfoPane() {
         cityInfoPane.getChildren().clear();
-        for (CityInfo c : getCityInfo(this)){
+        for (CityInfo c : getCityInfo(this)) {
             cityInfoPane.getChildren().add(c);
         }
     }
 
-    void removeCityInfo(CityInfo info){
+    void removeCityInfo(CityInfo info) {
         handler.removeWeatherDataObject(info.getWeather());
         cityInfoPane.getChildren().remove(info);
     }
 
-    public Set<CityInfo> getCityInfo(WeatherPageController controller){
+    public Set<CityInfo> getCityInfo(WeatherPageController controller) {
         Set<CityInfo> cityInfo = new TreeSet<>(new Comparator<CityInfo>() {
             @Override
             public int compare(CityInfo o1, CityInfo o2) {
                 return o1.getWeather().getCityName().compareTo(o2.getWeather().getCityName());
             }
         });
-        for (WeatherData d : handler.getFavorites()){
-            cityInfo.add(new CityInfo(d,controller,true));
+        for (WeatherData d : handler.getFavorites()) {
+            cityInfo.add(new CityInfo(d, controller, true));
         }
-        for (WeatherData d : handler.getWeatherLocations()){
-            cityInfo.add(new CityInfo(d,controller,false));
+        for (WeatherData d : handler.getWeatherLocations()) {
+            cityInfo.add(new CityInfo(d, controller, false));
         }
         return cityInfo;
     }
 
-    public void addFavorite(WeatherData data){
+    public void addFavorite(WeatherData data) {
         handler.addFavorite(data.getCityName());
     }
 
-    public void showDetails(WeatherData data){
+    public void showDetails(WeatherData data) {
+        handler.updateHistory(data.getCityName());
+
         weatherDataGraph.getData().clear();
         detailCityLabel.setText(data.getCityName());
         XYChart.Series series = new XYChart.Series();
         series.setName(data.getCityName());
 
+        Collection<Pair<String, Number>> weatherhistory = handler.getHistory(data.getCityName());
+
+        dateAxis.setTickLabelsVisible(true);
+        if (weatherhistory.size() > 5){
+            dateAxis.setTickLabelsVisible(false);
+        }
+
+        for (Pair p : weatherhistory) {
+            series.getData().add(new XYChart.Data(p.getKey(), p.getValue()));
+        }
+
         //fortsätt med pair här
 
-        series.getData().add(new XYChart.Data("2020-04-11 14:00:00",32));
-        series.getData().add(new XYChart.Data(data.getDate(), Integer.valueOf(data.getTemperature() )));
+        /*series.getData().add(new XYChart.Data("2020-04-11 14:00:00",32));
+        series.getData().add(new XYChart.Data("2020-04-12 14:00:00",33));*/
+
 
 
 
@@ -195,11 +215,11 @@ public class WeatherPageController implements Initializable {
         series.getData().add(new XYChart.Data("Nov", 29));
         series.getData().add(new XYChart.Data("Dec", 25));*/
         weatherDataGraph.getData().add(series);
-        detailPane.toFront();
+        detailContainerPane.toFront();
     }
 
 
-    public void removeFavorite (WeatherData data){
+    public void removeFavorite(WeatherData data) {
         handler.removeFavorite(data.getCityName());
     }
 }

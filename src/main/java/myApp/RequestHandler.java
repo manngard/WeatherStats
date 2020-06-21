@@ -25,7 +25,14 @@ public class RequestHandler {
     OkHttpClient client = new OkHttpClient();
     Map<String,WeatherData> weatherLocations = new HashMap<>();
     Map<String,WeatherData> favorites = new HashMap<>();
-    List<Triple<String,String,Number>> history = new ArrayList<>();
+    Set<Triple<String,String,Number>> history = new TreeSet<>(new Comparator<Triple>() {
+        @Override
+        public int compare(Triple t1, Triple t2) {
+            System.out.println(t1.getFirst().toString().compareTo(t2.getFirst().toString()));
+            return t1.getFirst().toString().compareTo(t2.getFirst().toString())
+                    + t1.getSecond().toString().compareTo(t2.getSecond().toString());
+        }
+    });
     /*File cache = null;*/
 
 
@@ -70,12 +77,12 @@ public class RequestHandler {
             throw new Exception();
         }
         weatherLocations.put(data.getCityName(),data);
-        addHistory(data.getCityName());
+        updateHistory(data.getCityName());
         cacheDataObjects();
     }
     void cacheDataObjects() {
         List <String> jsonArray = objectsToJson(Arrays.asList(favorites.values().toArray()));
-        List <String> jsonArray2 = objectsToJson(history);
+        List <String> jsonArray2 = objectsToJson(new ArrayList<>(history));
         try {
             Path path = Paths.get(App.class.getResource("cache.txt").toURI());
             Files.newBufferedWriter(path, StandardOpenOption.TRUNCATE_EXISTING);
@@ -120,6 +127,7 @@ public class RequestHandler {
     public Collection<WeatherData> getFavorites() {
         return favorites.values();
     }
+
     public Collection<Pair<String,Number>> getHistory(String city) {
         List <Pair<String,Number>> cityHistory = new ArrayList<>();
         for (Triple <String,String,Number> t : history){
@@ -145,7 +153,7 @@ public class RequestHandler {
         cacheDataObjects();
     }
 
-    public void addHistory(String city){
+    public void updateHistory(String city){
         WeatherData data = weatherLocations.get(city);
         history.add(new Triple<>(city,data.getDate(),Integer.valueOf(data.getTemperature())));
         cacheDataObjects();
