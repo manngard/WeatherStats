@@ -81,9 +81,14 @@ public class WeatherPageController implements Initializable {
     @FXML
     public void hideDetails() {
         detailContainerPane.toBack();
+
         weatherDataGraph.getData().clear();
+        handler.cleargraphItems();
+
         dates.clear();
         hideDates = false;
+
+        clearTextfield(seriesAdder);
         seriesAdder.setText(seriesAdderHelpMessage);
     }
 
@@ -94,9 +99,18 @@ public class WeatherPageController implements Initializable {
 
     @FXML
     void enterSearchBar(MouseEvent event) {
-        if (errorMessages.contains(searchBar.getText())) {
-            searchBar.setText("");
-            searchBar.setStyle("-fx-text-fill: black;");
+        clearTextfield(searchBar);
+    }
+
+    @FXML
+    void enterSeriesAdder(MouseEvent event) {
+        clearTextfield(seriesAdder);
+    }
+
+    private void clearTextfield(TextField textfield){
+        if (errorMessages.contains(textfield.getText())) {
+            textfield.setText("");
+            textfield.setStyle("-fx-text-fill: black;");
         }
     }
 
@@ -123,14 +137,18 @@ public class WeatherPageController implements Initializable {
         try {
             handler.createWeatherDataObject(searchBar.getText());
             populateCityInfoPane();
-        } catch (JsonSyntaxException e) {
-            searchBar.setText(cityNotFoundErrorMessage);
+        } catch (IllegalArgumentException e) {
+            /*searchBar.setText(cityNotFoundErrorMessage);
             searchBar.setStyle("-fx-text-fill: red;");
-            cityInfoPane.requestFocus();
-        } catch (Exception e) {
-            searchBar.setText(cityAlreadyAddedErrorMessage);
+            cityInfoPane.requestFocus();*/
+
+            displayError(searchBar,cityNotFoundErrorMessage);
+        } catch (IllegalStateException i) {
+            /*searchBar.setText(cityAlreadyAddedErrorMessage);
             searchBar.setStyle("-fx-text-fill: red;");
-            cityInfoPane.requestFocus();
+            cityInfoPane.requestFocus();*/
+
+            displayError(searchBar,cityAlreadyAddedErrorMessage);
         }
     }
 
@@ -147,6 +165,7 @@ public class WeatherPageController implements Initializable {
         searchBarHelpMessage = "Start by searching for a city";
         seriesAdderHelpMessage = "Add another city";
         cityNotFoundErrorMessage = "Your city was not found";
+
         cityAlreadyAddedErrorMessage = "Your city is already added";
 
         errorMessages.add(searchBarHelpMessage);
@@ -195,38 +214,55 @@ public class WeatherPageController implements Initializable {
     }
 
     public void showDetails(String city) {
+        try{
+            handler.createWeatherDataObject(city);
 
-        handler.updateHistory(city);
-        detailCityLabel.setText(city);
-        XYChart.Series <String,Number> series = new XYChart.Series();
-        series.setName(city);
+            detailCityLabel.setText(city);
+            XYChart.Series <String,Number> series = new XYChart.Series();
+            series.setName(city);
 
-        Collection<Pair<String, Number>> weatherhistory = handler.getHistory(city);
+            Collection<Pair<String, Number>> weatherhistory = handler.getHistory(city);
 
-        dateAxis.setTickLabelsVisible(true);
-        if (weatherhistory.size() > 5 || hideDates){
-            dateAxis.setTickLabelsVisible(false);
-            hideDates = true;
+            dateAxis.setTickLabelsVisible(true);
+            if (weatherhistory.size() > 5 || hideDates){
+                dateAxis.setTickLabelsVisible(false);
+                hideDates = true;
+            }
+
+            for (Pair p : weatherhistory) {
+                XYChart.Data datapoint = new XYChart.Data(p.getFirst(), p.getSecond());
+                series.getData().add(datapoint);
+                dates.add(datapoint.getXValue().toString());
+
+            }
+
+            dateAxis.setCategories(FXCollections.observableArrayList(dates));
+
+            weatherDataGraph.getData().add(series);
+
+            for (XYChart.Data<String,Number> entry : series.getData()) {
+                Tooltip t = new Tooltip(entry.getXValue());
+                Tooltip.install(entry.getNode(), t);
+
+            }
+
+            handler.addGraphItem(city);
+
+            detailContainerPane.toFront();
         }
-
-        for (Pair p : weatherhistory) {
-            XYChart.Data datapoint = new XYChart.Data(p.getFirst(), p.getSecond());
-            series.getData().add(datapoint);
-            dates.add(datapoint.getXValue().toString());
+        catch(IllegalArgumentException e){
+            displayError(seriesAdder,cityNotFoundErrorMessage);
 
         }
-
-        dateAxis.setCategories(FXCollections.observableArrayList(dates));
-
-        weatherDataGraph.getData().add(series);
-
-        for (XYChart.Data<String,Number> entry : series.getData()) {
-            Tooltip t = new Tooltip(entry.getXValue());
-            Tooltip.install(entry.getNode(), t);
-
+        catch(IllegalStateException i){
+            displayError(seriesAdder,cityAlreadyAddedErrorMessage);
         }
+    }
 
-        detailContainerPane.toFront();
+    private void displayError(TextField textfield, String error){
+        textfield.setText(error);
+        textfield.setStyle("-fx-text-fill: red;");
+        cityInfoPane.requestFocus();
     }
 
 
