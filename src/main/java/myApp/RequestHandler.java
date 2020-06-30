@@ -27,8 +27,8 @@ public class RequestHandler {
     Map<String,WeatherData> favorites = new HashMap<>();
     Set<Triple<String,String,Number>> history = new HashSet<>();
 
-    String GET(String url, String location){
-        HttpUrl.Builder httpBuilder = HttpUrl.parse(url).newBuilder();
+    String GET(String location){
+        HttpUrl.Builder httpBuilder = HttpUrl.parse("https://api.openweathermap.org/data/2.5/forecast").newBuilder();
         httpBuilder.addQueryParameter("q", location);
         httpBuilder.addQueryParameter("cnt", "1");
         httpBuilder.addQueryParameter("appid","f28077bccf0b9836ababfa545de25285");
@@ -60,9 +60,9 @@ public class RequestHandler {
         return jsonArray;
     }
 
-    void createWeatherDataObject(String url, String location) throws Exception{
+    void createWeatherDataObject(String location) throws Exception{
         Gson gson = new Gson();
-        String response = GET(url,location);
+        String response = GET(location);
         WeatherData data = gson.fromJson(response, WeatherData.class);
         if (weatherLocations.containsKey(data.getCityName())) {
             throw new Exception();
@@ -71,6 +71,7 @@ public class RequestHandler {
         updateHistory(data.getCityName());
         cacheDataObjects();
     }
+
     void cacheDataObjects() {
         List <String> jsonArray = objectsToJson(Arrays.asList(favorites.values().toArray()));
         List <String> jsonArray2 = objectsToJson(new ArrayList<>(history));
@@ -98,8 +99,9 @@ public class RequestHandler {
             jsonArray2 = Files.readAllLines(path2,Charset.defaultCharset());
             for (String s : jsonArray){
                 WeatherData data = gson.fromJson(s, WeatherData.class);
-                weatherLocations.put(data.getCityName(),data);
-                favorites.put(data.getCityName(),data);
+                WeatherData updateddata = gson.fromJson(GET(data.getCityName()), WeatherData.class);
+                weatherLocations.put(updateddata.getCityName(),updateddata);
+                favorites.put(updateddata.getCityName(),updateddata);
             }
             for (String s2 : jsonArray2){
                 if (s2.isEmpty()) break;

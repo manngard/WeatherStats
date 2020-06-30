@@ -121,7 +121,7 @@ public class WeatherPageController implements Initializable {
 
     void searchQuery() {
         try {
-            handler.createWeatherDataObject("https://api.openweathermap.org/data/2.5/forecast", searchBar.getText());
+            handler.createWeatherDataObject(searchBar.getText());
             populateCityInfoPane();
         } catch (JsonSyntaxException e) {
             searchBar.setText(cityNotFoundErrorMessage);
