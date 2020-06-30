@@ -1,6 +1,5 @@
 package myApp;
 
-import com.google.gson.JsonSyntaxException;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,11 +14,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
-import myApp.Pair;
-import myApp.TemperatureData.WeatherData;
+import myApp.temperaturedata.RequestHandler;
+import myApp.temperaturedata.WeatherData;
 
 import java.net.URL;
 import java.util.*;
+
+import static org.apache.commons.text.WordUtils.capitalizeFully;
 
 public class WeatherPageController implements Initializable {
     RequestHandler handler = new RequestHandler();
@@ -129,13 +130,13 @@ public class WeatherPageController implements Initializable {
     @FXML
     void updateDetails(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
-            showDetails(seriesAdder.getText());
+            showDetails(capitalizeFully(seriesAdder.getText()));
         }
     }
 
     void searchQuery() {
         try {
-            handler.createWeatherDataObject(searchBar.getText());
+            handler.createWeatherDataObject(capitalizeFully(searchBar.getText()));
             populateCityInfoPane();
         } catch (IllegalArgumentException e) {
             /*searchBar.setText(cityNotFoundErrorMessage);
@@ -209,8 +210,8 @@ public class WeatherPageController implements Initializable {
         return cityInfo;
     }
 
-    public void addFavorite(WeatherData data) {
-        handler.addFavorite(data.getCityName());
+    public void addFavorite(String city) {
+        handler.addFavorite(city);
     }
 
     public void showDetails(String city) {
@@ -266,7 +267,7 @@ public class WeatherPageController implements Initializable {
     }
 
 
-    public void removeFavorite(WeatherData data) {
-        handler.removeFavorite(data.getCityName());
+    public void removeFavorite(String city) {
+        handler.removeFavorite(city);
     }
 }

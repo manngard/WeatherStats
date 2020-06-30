@@ -7,10 +7,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
-import myApp.TemperatureData.WeatherData;
+import myApp.temperaturedata.WeatherData;
 
 import java.io.IOException;
 
@@ -45,7 +44,7 @@ public class CityInfo extends AnchorPane {
 
     @FXML
     void releaseFavoriteButton() {
-        parentController.addFavorite(weather);
+        parentController.addFavorite(weather.getCityName());
         favoriteIcon.toBack();
         favoriteIcon.setOpacity(0);
         unfavoriteIcon.toFront();
@@ -54,7 +53,7 @@ public class CityInfo extends AnchorPane {
 
     @FXML
     void releaseUnfavoriteButton() {
-        parentController.removeFavorite(weather);
+        parentController.removeFavorite(weather.getCityName());
         unfavoriteIcon.toBack();
         unfavoriteIcon.setOpacity(0);
         favoriteIcon.toFront();
@@ -96,7 +95,6 @@ public class CityInfo extends AnchorPane {
     @FXML
     void onHoverStop() {
         cityInfoBackground.setOpacity(1);
-        //parentController.hideDetails();
     }
 
     @FXML
@@ -105,7 +103,7 @@ public class CityInfo extends AnchorPane {
     }
 
     public CityInfo(WeatherData weather, WeatherPageController weatherPageController, boolean favorite) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CityInfo.fxml")); //recipe_listitem... från början
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CityInfo.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
@@ -125,7 +123,7 @@ public class CityInfo extends AnchorPane {
         cityLabel.setText(city);
         countryLabel.setText(country);
         temperatureLabel.setText(temperature + "°C");
-        //System.out.println(weather.getWeatherDescription());
+
         switch(weather.getWeatherDescription()){ //add more here
             case "light rain":
                 cityInfoBackground.setImage(ImageHandler.getImage("rainy.jpg"));

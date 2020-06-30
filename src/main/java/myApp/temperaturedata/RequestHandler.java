@@ -1,8 +1,10 @@
-package myApp;
+package myApp.temperaturedata;
 
 import com.google.gson.*;
 import kotlin.Triple;
-import myApp.TemperatureData.WeatherData;
+import myApp.App;
+import myApp.Pair;
+import myApp.temperaturedata.WeatherData;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -16,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.List;
 
 public class RequestHandler {
     OkHttpClient client = new OkHttpClient();
@@ -46,9 +49,9 @@ public class RequestHandler {
         }
     }
 
-    List<String> objectsToJson(List<?> data) {
+    java.util.List<String> objectsToJson(java.util.List<?> data) {
         Gson gson = new Gson();
-        List<String> jsonArray = new ArrayList<>();
+        java.util.List<String> jsonArray = new ArrayList<>();
         for (Object object : data) {
             String json = gson.toJson(object);
             jsonArray.add(json);
@@ -56,7 +59,7 @@ public class RequestHandler {
         return jsonArray;
     }
 
-    void createWeatherDataObject(String location) throws IllegalArgumentException {
+    public void createWeatherDataObject(String location) throws IllegalArgumentException {
         Gson gson = new Gson();
         WeatherData data;
         try {
@@ -72,8 +75,8 @@ public class RequestHandler {
     }
 
     void cacheDataObjects() {
-        List<String> jsonArray = objectsToJson(Arrays.asList(favorites.values().toArray()));
-        List<String> jsonArray2 = objectsToJson(new ArrayList<>(history));
+        java.util.List<String> jsonArray = objectsToJson(Arrays.asList(favorites.values().toArray()));
+        java.util.List<String> jsonArray2 = objectsToJson(new ArrayList<>(history));
         try {
             Path path = Paths.get(App.class.getResource("cache.txt").toURI());
             Files.newBufferedWriter(path, StandardOpenOption.TRUNCATE_EXISTING);
@@ -87,10 +90,10 @@ public class RequestHandler {
         }
     }
 
-    void loadDataObjects() {
+    public void loadDataObjects() {
         Gson gson = new Gson();
-        List<String> jsonArray;
-        List<String> jsonArray2;
+        java.util.List<String> jsonArray;
+        java.util.List<String> jsonArray2;
         try {
             Path path = Paths.get(App.class.getResource("cache.txt").toURI());
             jsonArray = Files.readAllLines(path, Charset.defaultCharset());
@@ -120,7 +123,7 @@ public class RequestHandler {
         return favorites.values();
     }
 
-    public Collection<myApp.Pair<String, Number>> getHistory(String city) {
+    public Collection<Pair<String, Number>> getHistory(String city) {
         List<Pair<String, Number>> cityHistory = new ArrayList<>();
         for (Triple<String, String, Number> t : history) {
             if (city.equals(t.getFirst())) {
