@@ -29,7 +29,7 @@ public class RequestHandler {
 
     Set<Triple<String, String, Number>> history = new HashSet<>();
 
-    String GET(String location) {
+    private String GET(String location) {
         HttpUrl.Builder httpBuilder = HttpUrl.parse("https://api.openweathermap.org/data/2.5/forecast").newBuilder();
         httpBuilder.addQueryParameter("q", location);
         httpBuilder.addQueryParameter("cnt", "1");
@@ -51,9 +51,9 @@ public class RequestHandler {
         }
     }
 
-    java.util.List<String> objectsToJson(java.util.List<?> data) {
+    private List<String> objectsToJson(List<Object> data) {
         Gson gson = new Gson();
-        java.util.List<String> jsonArray = new ArrayList<>();
+        List<String> jsonArray = new ArrayList<>();
         for (Object object : data) {
             String json = gson.toJson(object);
             jsonArray.add(json);
@@ -82,7 +82,7 @@ public class RequestHandler {
         cacheDataObjects();
     }
 
-    void cacheDataObjects() {
+    private void cacheDataObjects() {
         java.util.List<String> jsonArray = objectsToJson(Arrays.asList(favorites.values().toArray()));
         java.util.List<String> jsonArray2 = objectsToJson(new ArrayList<>(history));
         try {
@@ -169,7 +169,7 @@ public class RequestHandler {
     }
 
 
-    public void updateHistory(String city) throws IllegalArgumentException,IllegalStateException {
+    private void updateHistory(String city) throws IllegalArgumentException,IllegalStateException {
 
         if (graphItems.containsKey(city)) {
             throw new IllegalStateException();
@@ -180,7 +180,7 @@ public class RequestHandler {
         history.add(new Triple<>(city, data.getDate(), Integer.valueOf(data.getTemperature())));
     }
 
-    public void updateHistory(String city, String alias) throws IllegalArgumentException,IllegalStateException {
+    private void updateHistory(String city, String alias) throws IllegalArgumentException,IllegalStateException {
 
         if (graphItems.containsKey(city) || graphItems.containsKey(alias)) {
             throw new IllegalStateException();

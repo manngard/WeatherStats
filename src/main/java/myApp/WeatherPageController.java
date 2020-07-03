@@ -23,12 +23,12 @@ import java.util.*;
 import static org.apache.commons.text.WordUtils.capitalizeFully;
 
 public class WeatherPageController implements Initializable {
-    RequestHandler handler = new RequestHandler();
-    List<String> errorMessages = new ArrayList<>();
-    String searchBarHelpMessage;
-    String seriesAdderHelpMessage;
-    String cityNotFoundErrorMessage;
-    String cityAlreadyAddedErrorMessage;
+    private RequestHandler handler = new RequestHandler();
+    private List<String> errorMessages = new ArrayList<>();
+    private String searchBarHelpMessage;
+    private String seriesAdderHelpMessage;
+    private String cityNotFoundErrorMessage;
+    private String cityAlreadyAddedErrorMessage;
 
     boolean hideDates = false;
 
@@ -80,7 +80,7 @@ public class WeatherPageController implements Initializable {
     private TextField seriesAdder;
 
     @FXML
-    public void hideDetails() {
+    void hideDetails() {
         detailContainerPane.toBack();
 
         weatherDataGraph.getData().clear();
@@ -95,7 +95,7 @@ public class WeatherPageController implements Initializable {
     }
 
     @FXML
-    public void ignoreClick(MouseEvent event){
+    void ignoreClick(MouseEvent event){
         event.consume();
     }
 
@@ -140,16 +140,8 @@ public class WeatherPageController implements Initializable {
             handler.createWeatherDataObject(capitalizeFully(searchBar.getText()));
             populateCityInfoPane();
         } catch (IllegalArgumentException e) {
-            /*searchBar.setText(cityNotFoundErrorMessage);
-            searchBar.setStyle("-fx-text-fill: red;");
-            cityInfoPane.requestFocus();*/
-
             displayError(searchBar,cityNotFoundErrorMessage);
         } catch (IllegalStateException i) {
-            /*searchBar.setText(cityAlreadyAddedErrorMessage);
-            searchBar.setStyle("-fx-text-fill: red;");
-            cityInfoPane.requestFocus();*/
-
             displayError(searchBar,cityAlreadyAddedErrorMessage);
         }
     }
@@ -167,7 +159,6 @@ public class WeatherPageController implements Initializable {
         searchBarHelpMessage = "Start by searching for a city";
         seriesAdderHelpMessage = "Add another city";
         cityNotFoundErrorMessage = "Your city was not found";
-
         cityAlreadyAddedErrorMessage = "Your city is already added";
 
         errorMessages.add(searchBarHelpMessage);
@@ -195,7 +186,7 @@ public class WeatherPageController implements Initializable {
         cityInfoPane.getChildren().remove(info);
     }
 
-    public Set<CityInfo> getCityInfo(WeatherPageController controller) {
+    private Set<CityInfo> getCityInfo(WeatherPageController controller) {
         Set<CityInfo> cityInfo = new TreeSet<>(new Comparator<CityInfo>() {
             @Override
             public int compare(CityInfo o1, CityInfo o2) {
@@ -211,22 +202,28 @@ public class WeatherPageController implements Initializable {
         return cityInfo;
     }
 
-    public void addFavorite(String city) {
+    void addFavorite(String city) {
         handler.addFavorite(city);
     }
 
-    public void showDetails(String city) {
+    void showDetails(String city) {
         try{
             handler.createWeatherDataObject(city);
 
-            detailCityLabel.setText(city);
+            if (weatherDataGraph.getData().size() == 0){
+                detailCityLabel.setText(city);
+            }
+            else{
+                detailCityLabel.setText("Analysis");
+            }
+
             XYChart.Series <String,Number> series = new XYChart.Series();
             series.setName(city);
 
             Collection<Pair<String, Number>> weatherhistory = handler.getHistory(city);
 
             dateAxis.setTickLabelsVisible(true);
-            if (weatherhistory.size() > 5 || hideDates){
+            if (dates.size() > 4 || hideDates){
                 dateAxis.setTickLabelsVisible(false);
                 hideDates = true;
             }
@@ -268,7 +265,7 @@ public class WeatherPageController implements Initializable {
     }
 
 
-    public void removeFavorite(String city) {
+    void removeFavorite(String city) {
         handler.removeFavorite(city);
     }
 }

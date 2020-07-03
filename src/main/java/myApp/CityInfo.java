@@ -100,7 +100,6 @@ public class CityInfo extends AnchorPane {
     @FXML
     void openDetails() {
         parentController.showDetails(weather.getCityName());
-        System.out.println(weather.getWeatherDescription());
     }
 
     public CityInfo(WeatherData weather, WeatherPageController weatherPageController, boolean favorite) {
@@ -184,7 +183,7 @@ public class CityInfo extends AnchorPane {
             case "Light shower snow":
             case "Shower snow":
             case "Heavy shower snow":
-                cityInfoBackground.setImage(ImageHandler.getImage("snowy.jpg")); //to fix
+                cityInfoBackground.setImage(ImageHandler.getImage("snowy.jpg"));
                 break;
 
             case "fog":
