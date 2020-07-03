@@ -25,6 +25,8 @@ public class RequestHandler {
     Map<String, WeatherData> weatherLocations = new HashMap<>();
     Map<String, WeatherData> graphItems = new HashMap<>();
     Map<String, WeatherData> favorites = new HashMap<>();
+    Map<String, String> aliasNames = new HashMap<>();
+
     Set<Triple<String, String, Number>> history = new HashSet<>();
 
     String GET(String location) {
@@ -59,17 +61,23 @@ public class RequestHandler {
         return jsonArray;
     }
 
-    public void createWeatherDataObject(String location) throws IllegalArgumentException {
+    public void createWeatherDataObject(String location) throws IllegalArgumentException,IllegalStateException {
         Gson gson = new Gson();
         WeatherData data;
+
+        String city = aliasNames.getOrDefault(location, location);
+
         try {
-            String response = GET(location);
+            String response = GET(city);
             data = gson.fromJson(response, WeatherData.class);
         } catch (JsonSyntaxException e) {
             throw new IllegalArgumentException();
         }
 
         weatherLocations.put(data.getCityName(), data);
+        if (!data.getCityName().equals(city)){
+            updateHistory(city,data.getCityName());
+        }
         updateHistory(data.getCityName());
         cacheDataObjects();
     }
@@ -125,8 +133,12 @@ public class RequestHandler {
 
     public Collection<Pair<String, Number>> getHistory(String city) {
         List<Pair<String, Number>> cityHistory = new ArrayList<>();
+        List<String> aliases = new ArrayList<>();
+        aliases.add(city);
+        aliases.add(aliasNames.get(city));
+
         for (Triple<String, String, Number> t : history) {
-            if (city.equals(t.getFirst())) {
+            if (aliases.contains(t.getFirst())) {
                 cityHistory.add(new Pair<>(t.getSecond(), t.getThird()));
             }
         }
@@ -166,6 +178,28 @@ public class RequestHandler {
         WeatherData data = weatherLocations.get(city);
 
         history.add(new Triple<>(city, data.getDate(), Integer.valueOf(data.getTemperature())));
-        cacheDataObjects();
+    }
+
+    public void updateHistory(String city, String alias) throws IllegalArgumentException,IllegalStateException {
+
+        if (graphItems.containsKey(city) || graphItems.containsKey(alias)) {
+            throw new IllegalStateException();
+        }
+
+        WeatherData data = weatherLocations.get(city);
+        WeatherData aliasdata = weatherLocations.get(alias);
+
+        if (data == null && aliasdata == null){
+            throw new IllegalArgumentException();
+        }
+        else{
+            if (data != null){
+                history.add(new Triple<>(city, data.getDate(), Integer.valueOf(data.getTemperature())));
+            }
+            if (aliasdata != null){
+                history.add(new Triple<>(city, aliasdata.getDate(), Integer.valueOf(aliasdata.getTemperature())));
+            }
+            aliasNames.put(alias,city);
+        }
     }
 }

@@ -91,6 +91,7 @@ public class WeatherPageController implements Initializable {
 
         clearTextfield(seriesAdder);
         seriesAdder.setText(seriesAdderHelpMessage);
+
     }
 
     @FXML
@@ -230,24 +231,24 @@ public class WeatherPageController implements Initializable {
                 hideDates = true;
             }
 
+
             for (Pair p : weatherhistory) {
                 XYChart.Data datapoint = new XYChart.Data(p.getFirst(), p.getSecond());
                 series.getData().add(datapoint);
                 dates.add(datapoint.getXValue().toString());
-
             }
 
             dateAxis.setCategories(FXCollections.observableArrayList(dates));
+
 
             weatherDataGraph.getData().add(series);
 
             for (XYChart.Data<String,Number> entry : series.getData()) {
                 Tooltip t = new Tooltip(entry.getXValue());
                 Tooltip.install(entry.getNode(), t);
-
             }
 
-            handler.addGraphItem(city);
+            handler.addGraphItem(capitalizeFully(city));
 
             detailContainerPane.toFront();
         }
