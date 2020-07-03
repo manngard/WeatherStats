@@ -57,6 +57,11 @@ public class WeatherData {
         return list.get(0).getWeather().get(0).getDescription();
     }
 
+    public String getWeather() {
+        return list.get(0).getWeather().get(0).getMain();
+    }
+
+
     public void setList(java.util.List<myApp.temperaturedata.List> list) {
         this.list = list;
     }

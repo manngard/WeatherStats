@@ -100,6 +100,7 @@ public class CityInfo extends AnchorPane {
     @FXML
     void openDetails() {
         parentController.showDetails(weather.getCityName());
+        System.out.println(weather.getWeatherDescription());
     }
 
     public CityInfo(WeatherData weather, WeatherPageController weatherPageController, boolean favorite) {
@@ -126,19 +127,74 @@ public class CityInfo extends AnchorPane {
 
         switch(weather.getWeatherDescription()){ //add more here
             case "light rain":
+            case "moderate rain":
+            case "heavy intensity rain":
+            case "very heavy rain":
+            case "extreme rain":
+            case "freezing rain":
+            case "light intensity shower rain":
+            case "shower rain":
+            case "high intensity shower rain":
+            case "ragged shower rain":
+            case "light intensity drizzle":
+            case "drizzle":
+            case "heavy intensity drizzle":
+            case "light intensity drizzle rain":
+            case "drizzle rain":
+            case "heavy intensity drizzle rain":
+            case "shower rain and drizzle":
+            case "heavy shower rain and drizzle":
+            case "shower drizzle":
                 cityInfoBackground.setImage(ImageHandler.getImage("rainy.jpg"));
                 break;
+
+            case "few clouds":
+            case "scattered clouds":
+                cityInfoBackground.setImage(ImageHandler.getImage("partlycloudy.jpg"));
+                break;
+
+
             case "overcast clouds":
-                cityInfoBackground.setImage(ImageHandler.getImage("cloudy.jpg"));
-                break;
-            case "sunny":
-                cityInfoBackground.setImage(ImageHandler.getImage("sunny.jpg"));
-                break;
             case "broken clouds":
                 cityInfoBackground.setImage(ImageHandler.getImage("cloudy.jpg"));
                 break;
-            default:
+
+            case "clear sky":
                 cityInfoBackground.setImage(ImageHandler.getImage("sunny.jpg"));
+                break;
+
+            case "thunderstorm with light rain":
+            case "thunderstorm with rain":
+            case "thunderstorm with heavy rain":
+            case "light thunderstorm":
+            case "thunderstorm":
+            case "heavy thunderstorm":
+            case "ragged thunderstorm":
+            case "thunderstorm with light drizzle":
+            case "thunderstorm with drizzle":
+            case "thunderstorm with heavy drizzle":
+                cityInfoBackground.setImage(ImageHandler.getImage("stormy.jpg"));
+                break;
+
+            case "light snow":
+            case "Snow":
+            case "Heavy snow":
+            case "Light rain and snow":
+            case "Rain and snow":
+            case "Light shower snow":
+            case "Shower snow":
+            case "Heavy shower snow":
+                cityInfoBackground.setImage(ImageHandler.getImage("snowy.jpg")); //to fix
+                break;
+
+            case "fog":
+            case "mist":
+            case "Smoke":
+                cityInfoBackground.setImage(ImageHandler.getImage("foggy.jpg"));
+                break;
+
+            default:
+                cityInfoBackground.setImage(ImageHandler.getImage("cloudy.jpg"));
         }
 
         cityInfoBackground.setFitWidth(200);

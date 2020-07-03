@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -18,16 +19,25 @@
          <font>
             <Font size="24.0" />
          </font>
+         <effect>
+            <DropShadow color="#c3c3c3" height="6.0" offsetX="1.25" offsetY="1.25" radius="2.5" width="6.0" />
+         </effect>
       </Label>
       <Label fx:id="countryLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="6.0" layoutY="80.0" onMouseClicked="#openDetails" onMouseEntered="#onHoverStart" prefHeight="20.0" prefWidth="190.0" text="Country" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="4.0">
          <font>
             <Font size="14.0" />
          </font>
+         <effect>
+            <DropShadow color="#c3c3c3" height="6.0" offsetX="1.25" offsetY="1.25" radius="2.5" width="6.0" />
+         </effect>
       </Label>
       <Label fx:id="temperatureLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="5.0" layoutY="168.0" onMouseClicked="#openDetails" onMouseEntered="#onHoverStart" prefHeight="93.0" prefWidth="190.0" text="?" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
          <font>
             <Font size="64.0" />
          </font>
+         <effect>
+            <DropShadow color="#c3c3c3" height="6.0" offsetX="1.25" offsetY="1.25" radius="2.5" width="6.0" />
+         </effect>
       </Label>
       <ImageView fx:id="closeIcon" fitHeight="20.0" fitWidth="19.0" layoutX="172.0" layoutY="5.0" onMouseEntered="#onHoverStart" onMousePressed="#iconPressed" onMouseReleased="#releaseCloseButton" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="10.0">
          <image>
