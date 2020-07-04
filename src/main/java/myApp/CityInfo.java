@@ -13,6 +13,10 @@ import myApp.temperaturedata.WeatherData;
 
 import java.io.IOException;
 
+/**
+ * The specification for a CityInfo class, shown as cards in the GUI
+ */
+
 public class CityInfo extends AnchorPane {
     private WeatherPageController parentController;
     private WeatherData weather;
@@ -41,68 +45,7 @@ public class CityInfo extends AnchorPane {
     @FXML
     private ImageView unfavoriteIcon;
 
-
-    @FXML
-    void releaseFavoriteButton() {
-        parentController.addFavorite(weather.getCityName());
-        favoriteIcon.toBack();
-        favoriteIcon.setOpacity(0);
-        unfavoriteIcon.toFront();
-        unfavoriteIcon.setOpacity(0.8);
-    }
-
-    @FXML
-    void releaseUnfavoriteButton() {
-        parentController.removeFavorite(weather.getCityName());
-        unfavoriteIcon.toBack();
-        unfavoriteIcon.setOpacity(0);
-        favoriteIcon.toFront();
-        favoriteIcon.setOpacity(0.8);
-    }
-
-    @FXML
-    void iconPressed() {
-        if (closeIcon.isPressed()){
-            closeIcon.setOpacity(0.5);
-        }
-        if (favoriteIcon.isPressed()){
-            favoriteIcon.setOpacity(0.5);
-        }
-        if (unfavoriteIcon.isPressed()){
-            unfavoriteIcon.setOpacity(0.5);
-        }
-    }
-    @FXML
-    void releaseCloseButton() {
-        final CityInfo requester = this;
-        closeIcon.setOpacity(1);
-        FadeTransition fade = new FadeTransition(Duration.seconds(0.5), requester);
-        fade.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                parentController.removeCityInfo(requester);
-            }
-        });
-        fade.setToValue(0);
-        fade.play();
-    }
-
-    @FXML
-    void onHoverStart() {
-        cityInfoBackground.setOpacity(0.7);
-    }
-
-    @FXML
-    void onHoverStop() {
-        cityInfoBackground.setOpacity(1);
-    }
-
-    @FXML
-    void openDetails() {
-        parentController.showDetails(weather.getCityName());
-    }
-
-    public CityInfo(WeatherData weather, WeatherPageController weatherPageController, boolean favorite) {
+    CityInfo(WeatherData weather, WeatherPageController weatherPageController, boolean favorite) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CityInfo.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -211,6 +154,89 @@ public class CityInfo extends AnchorPane {
         }
 
     }
+
+    /**
+     * Highlights the appropriate icon on click entered
+     */
+
+    @FXML
+    void iconPressed() {
+        if (closeIcon.isPressed()){
+            closeIcon.setOpacity(0.5);
+        }
+        if (favoriteIcon.isPressed()){
+            favoriteIcon.setOpacity(0.5);
+        }
+        if (unfavoriteIcon.isPressed()){
+            unfavoriteIcon.setOpacity(0.5);
+        }
+    }
+
+    /**
+     * Function is triggered when click is released from favoriteIcon,
+     * adding the chosen city to favorites and bringing unfavoritebutton to front
+     */
+
+    @FXML
+    void releaseFavoriteButton() {
+        parentController.addFavorite(weather.getCityName());
+        favoriteIcon.toBack();
+        favoriteIcon.setOpacity(0);
+        unfavoriteIcon.toFront();
+        unfavoriteIcon.setOpacity(0.8);
+    }
+
+    /**
+     * Function is triggered when click is released from unfavoriteIcon,
+     * removing the chosen city from favorites and bringing favoritebutton to front
+     */
+
+    @FXML
+    void releaseUnfavoriteButton() {
+        parentController.removeFavorite(weather.getCityName());
+        unfavoriteIcon.toBack();
+        unfavoriteIcon.setOpacity(0);
+        favoriteIcon.toFront();
+        favoriteIcon.setOpacity(0.8);
+    }
+
+    /**
+     * Function is triggered when click is released from closeIcon,
+     * removing the chosen city's CityInfo card from GUI and unfavoriting if applicable
+     */
+
+    @FXML
+    void releaseCloseButton() {
+        final CityInfo requester = this;
+        closeIcon.setOpacity(1);
+        FadeTransition fade = new FadeTransition(Duration.seconds(0.5), requester);
+        fade.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                parentController.removeCityInfo(requester);
+            }
+        });
+        fade.setToValue(0);
+        fade.play();
+    }
+
+    @FXML
+    void onHoverStart() {
+        cityInfoBackground.setOpacity(0.7);
+    }
+
+    @FXML
+    void onHoverStop() {
+        cityInfoBackground.setOpacity(1);
+    }
+
+    @FXML
+    void openDetails() {
+        parentController.showDetails(weather.getCityName());
+    }
+
+
+
     public WeatherData getWeather() {
         return weather;
     }

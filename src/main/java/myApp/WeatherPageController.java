@@ -22,23 +22,25 @@ import java.util.*;
 
 import static org.apache.commons.text.WordUtils.capitalizeFully;
 
+/**
+ * The specification of a Controller class for WeatherPage.fxml
+ */
+
 public class WeatherPageController implements Initializable {
-    private RequestHandler handler = new RequestHandler();
-    private List<String> errorMessages = new ArrayList<>();
-    private String searchBarHelpMessage;
-    private String seriesAdderHelpMessage;
-    private String cityNotFoundErrorMessage;
-    private String cityAlreadyAddedErrorMessage;
-
-    private boolean hideDates = false;
-
-    private Set <String> dates = new TreeSet<>(new Comparator<String>() {
+    private final RequestHandler handler = new RequestHandler();
+    private final List<String> errorMessages = new ArrayList<>();
+    private final Set <String> dates = new TreeSet<>(new Comparator<String>() {
         @Override
         public int compare(String s1, String s2) {
             return s1.compareTo(s2);
         }
     });
 
+    private String searchBarHelpMessage;
+    private String seriesAdderHelpMessage;
+    private String cityNotFoundErrorMessage;
+    private String cityAlreadyAddedErrorMessage;
+    private boolean hideDates = false;
 
     @FXML
     private LineChart<String, Number> weatherDataGraph;
@@ -80,6 +82,21 @@ public class WeatherPageController implements Initializable {
     private TextField seriesAdder;
 
     @FXML
+    void ignoreClick(MouseEvent event){
+        event.consume();
+    }
+
+    @FXML
+    void enterSearchBar(MouseEvent event) {
+        clearTextfield(searchBar);
+    }
+
+    @FXML
+    void enterSeriesAdder(MouseEvent event) {
+        clearTextfield(seriesAdder);
+    }
+
+    @FXML
     void hideDetails() {
         detailContainerPane.toBack();
 
@@ -95,24 +112,9 @@ public class WeatherPageController implements Initializable {
     }
 
     @FXML
-    void ignoreClick(MouseEvent event){
-        event.consume();
-    }
-
-    @FXML
-    void enterSearchBar(MouseEvent event) {
-        clearTextfield(searchBar);
-    }
-
-    @FXML
-    void enterSeriesAdder(MouseEvent event) {
-        clearTextfield(seriesAdder);
-    }
-
-    private void clearTextfield(TextField textfield){
-        if (errorMessages.contains(textfield.getText())) {
-            textfield.setText("");
-            textfield.setStyle("-fx-text-fill: black;");
+    void updateDetails(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            showDetails(capitalizeFully(seriesAdder.getText()));
         }
     }
 
@@ -128,14 +130,7 @@ public class WeatherPageController implements Initializable {
         }
     }
 
-    @FXML
-    void updateDetails(KeyEvent event) {
-        if (event.getCode() == KeyCode.ENTER) {
-            showDetails(capitalizeFully(seriesAdder.getText()));
-        }
-    }
-
-    void searchQuery() {
+    private void searchQuery() {
         try {
             handler.createWeatherDataObject(capitalizeFully(searchBar.getText()));
             populateCityInfoPane();
@@ -181,11 +176,6 @@ public class WeatherPageController implements Initializable {
         }
     }
 
-    void removeCityInfo(CityInfo info) {
-        handler.removeWeatherDataObject(info.getWeather());
-        cityInfoPane.getChildren().remove(info);
-    }
-
     private Set<CityInfo> getCityInfo(WeatherPageController controller) {
         Set<CityInfo> cityInfo = new TreeSet<>(new Comparator<CityInfo>() {
             @Override
@@ -202,9 +192,6 @@ public class WeatherPageController implements Initializable {
         return cityInfo;
     }
 
-    void addFavorite(String city) {
-        handler.addFavorite(city);
-    }
 
     void showDetails(String city) {
         try{
@@ -219,15 +206,7 @@ public class WeatherPageController implements Initializable {
 
             XYChart.Series <String,Number> series = new XYChart.Series();
             series.setName(city);
-
             Collection<Pair<String, Number>> weatherhistory = handler.getHistory(city);
-
-            dateAxis.setTickLabelsVisible(true);
-            if (dates.size() > 4 || hideDates){
-                dateAxis.setTickLabelsVisible(false);
-                hideDates = true;
-            }
-
 
             for (Pair p : weatherhistory) {
                 XYChart.Data datapoint = new XYChart.Data(p.getFirst(), p.getSecond());
@@ -235,9 +214,13 @@ public class WeatherPageController implements Initializable {
                 dates.add(datapoint.getXValue().toString());
             }
 
+            dateAxis.setTickLabelsVisible(true);
+            if (dates.size() > 4 || hideDates){
+                dateAxis.setTickLabelsVisible(false);
+                hideDates = true;
+            }
+
             dateAxis.setCategories(FXCollections.observableArrayList(dates));
-
-
             weatherDataGraph.getData().add(series);
 
             for (XYChart.Data<String,Number> entry : series.getData()) {
@@ -246,15 +229,20 @@ public class WeatherPageController implements Initializable {
             }
 
             handler.addGraphItem(capitalizeFully(city));
-
             detailContainerPane.toFront();
         }
         catch(IllegalArgumentException e){
             displayError(seriesAdder,cityNotFoundErrorMessage);
-
         }
         catch(IllegalStateException i){
             displayError(seriesAdder,cityAlreadyAddedErrorMessage);
+        }
+    }
+
+    private void clearTextfield(TextField textfield){
+        if (errorMessages.contains(textfield.getText())) {
+            textfield.setText("");
+            textfield.setStyle("-fx-text-fill: black;");
         }
     }
 
@@ -264,8 +252,17 @@ public class WeatherPageController implements Initializable {
         cityInfoPane.requestFocus();
     }
 
+    void addFavorite(String city) {
+        handler.addFavorite(city);
+    }
 
     void removeFavorite(String city) {
         handler.removeFavorite(city);
     }
+
+    void removeCityInfo(CityInfo info) {
+        handler.removeWeatherDataObject(info.getWeather());
+        cityInfoPane.getChildren().remove(info);
+    }
+
 }

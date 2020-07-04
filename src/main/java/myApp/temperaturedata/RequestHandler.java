@@ -4,7 +4,6 @@ import com.google.gson.*;
 import kotlin.Triple;
 import myApp.App;
 import myApp.Pair;
-import myApp.temperaturedata.WeatherData;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -21,15 +20,16 @@ import java.util.*;
 import java.util.List;
 
 public class RequestHandler {
-    OkHttpClient client = new OkHttpClient();
-    Map<String, WeatherData> weatherLocations = new HashMap<>();
-    Map<String, WeatherData> graphItems = new HashMap<>();
-    Map<String, WeatherData> favorites = new HashMap<>();
-    Map<String, String> aliasNames = new HashMap<>();
-
-    Set<Triple<String, String, Number>> history = new HashSet<>();
+    private final OkHttpClient client = new OkHttpClient();
+    private final Map<String, WeatherData> weatherLocations = new HashMap<>();
+    private final Map<String, WeatherData> graphItems = new HashMap<>();
+    private final Map<String, WeatherData> favorites = new HashMap<>();
+    private final Map<String, String> aliasNames = new HashMap<>();
+    private final Set<Triple<String, String, Number>> history = new HashSet<>();
 
     private String GET(String location) {
+        String parsedResponse = null;
+
         HttpUrl.Builder httpBuilder = HttpUrl.parse("https://api.openweathermap.org/data/2.5/forecast").newBuilder();
         httpBuilder.addQueryParameter("q", location);
         httpBuilder.addQueryParameter("cnt", "1");
@@ -44,11 +44,11 @@ public class RequestHandler {
 
         try (Response response = client.newCall(request).execute()) {
             JsonElement dataResponse = parser.parse(response.body().string());
-            String parsedResponse = gson.toJson(dataResponse);
-            return parsedResponse;
+            parsedResponse = gson.toJson(dataResponse);
         } catch (IOException e) {
-            return "Fault";
+            e.printStackTrace();
         }
+        return parsedResponse;
     }
 
     private List<String> objectsToJson(List<Object> data) {
