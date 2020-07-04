@@ -30,9 +30,9 @@ public class WeatherPageController implements Initializable {
     private String cityNotFoundErrorMessage;
     private String cityAlreadyAddedErrorMessage;
 
-    boolean hideDates = false;
+    private boolean hideDates = false;
 
-    Set <String> dates = new TreeSet<>(new Comparator<String>() {
+    private Set <String> dates = new TreeSet<>(new Comparator<String>() {
         @Override
         public int compare(String s1, String s2) {
             return s1.compareTo(s2);
@@ -241,7 +241,7 @@ public class WeatherPageController implements Initializable {
             weatherDataGraph.getData().add(series);
 
             for (XYChart.Data<String,Number> entry : series.getData()) {
-                Tooltip t = new Tooltip(entry.getXValue());
+                Tooltip t = new Tooltip( city + "\n" + entry.getXValue());
                 Tooltip.install(entry.getNode(), t);
             }
 

@@ -78,7 +78,9 @@ public class RequestHandler {
         if (!data.getCityName().equals(city)){
             updateHistory(city,data.getCityName());
         }
-        updateHistory(data.getCityName());
+        else{
+            updateHistory(data.getCityName());
+        }
         cacheDataObjects();
     }
 
