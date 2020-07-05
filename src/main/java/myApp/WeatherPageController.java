@@ -132,7 +132,7 @@ public class WeatherPageController implements Initializable {
 
     private void searchQuery() {
         try {
-            handler.createWeatherDataObject(capitalizeFully(searchBar.getText()));
+            handler.createWeatherDataObject(capitalizeFully(searchBar.getText()), false);
             populateCityInfoPane();
         } catch (IllegalArgumentException e) {
             displayError(searchBar,cityNotFoundErrorMessage);
@@ -195,7 +195,7 @@ public class WeatherPageController implements Initializable {
 
     void showDetails(String city) {
         try{
-            handler.createWeatherDataObject(city);
+            handler.createWeatherDataObject(city, true);
 
             if (weatherDataGraph.getData().size() == 0){
                 detailCityLabel.setText(city);

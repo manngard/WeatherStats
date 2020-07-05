@@ -61,28 +61,23 @@ public class WeatherData {
         return list.get(0).getWeather().get(0).getMain();
     }
 
-
     public void setList(java.util.List<myApp.temperaturedata.List> list) {
         this.list = list;
     }
 
-
-
-    //City object functions
     public String getCityName() {
         return city.getName();
     }
+
     public String getCountry() {
         return city.getCountry();
     }
+
     public String getCityCoords() {
         return city.getCoord().toString();
     }
+
     public String getCityPopulation() {
         return city.getPopulation().toString();
     }
-
-    /*public void setCity(City city) {
-        this.city = city;
-    }*/
 }

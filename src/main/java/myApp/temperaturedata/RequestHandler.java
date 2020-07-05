@@ -2,7 +2,6 @@ package myApp.temperaturedata;
 
 import com.google.gson.*;
 import kotlin.Triple;
-import myApp.App;
 import myApp.Pair;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -10,12 +9,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.List;
 
@@ -61,67 +54,53 @@ public class RequestHandler {
         return jsonArray;
     }
 
-    public void createWeatherDataObject(String location) throws IllegalArgumentException,IllegalStateException {
+    public void createWeatherDataObject(String location, boolean inGraph) throws IllegalArgumentException, IllegalStateException {
         Gson gson = new Gson();
-        WeatherData data;
-
         String city = aliasNames.getOrDefault(location, location);
+        WeatherData data = fetchNewData(city);
 
-        try {
-            String response = GET(city);
-            data = gson.fromJson(response, WeatherData.class);
-        } catch (JsonSyntaxException e) {
-            throw new IllegalArgumentException();
+        if (!inGraph) {
+            weatherLocations.put(data.getCityName(), data);
         }
 
-        weatherLocations.put(data.getCityName(), data);
-        if (!data.getCityName().equals(city)){
-            updateHistory(city,data.getCityName());
-        }
-        else{
+        if (!data.getCityName().equals(city)) {
+            updateHistory(city, data.getCityName());
+        } else {
             updateHistory(data.getCityName());
         }
         cacheDataObjects();
     }
 
-    private void cacheDataObjects() {
-        java.util.List<String> jsonArray = objectsToJson(Arrays.asList(favorites.values().toArray()));
-        java.util.List<String> jsonArray2 = objectsToJson(new ArrayList<>(history));
+    private WeatherData fetchNewData(String location) throws IllegalArgumentException {
+        Gson gson = new Gson();
+        WeatherData data;
         try {
-            Path path = Paths.get(App.class.getResource("cache.txt").toURI());
-            Files.newBufferedWriter(path, StandardOpenOption.TRUNCATE_EXISTING);
-            Files.write(path, jsonArray, Charset.defaultCharset());
-
-            Path path2 = Paths.get(App.class.getResource("history.txt").toURI());
-            Files.newBufferedWriter(path2, StandardOpenOption.TRUNCATE_EXISTING);
-            Files.write(path2, jsonArray2, Charset.defaultCharset());
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            String response = GET(location);
+            data = gson.fromJson(response, WeatherData.class);
+        } catch (JsonSyntaxException e) {
+            throw new IllegalArgumentException();
         }
+        return data;
+    }
+
+    private void cacheDataObjects() {
+        DataStorer.saveAsTextfile(objectsToJson(Arrays.asList(favorites.values().toArray())), "cache.txt");
+        DataStorer.saveAsTextfile(objectsToJson(new ArrayList<>(history)), "history.txt");
     }
 
     public void loadDataObjects() {
         Gson gson = new Gson();
-        java.util.List<String> jsonArray;
-        java.util.List<String> jsonArray2;
-        try {
-            Path path = Paths.get(App.class.getResource("cache.txt").toURI());
-            jsonArray = Files.readAllLines(path, Charset.defaultCharset());
-            Path path2 = Paths.get(App.class.getResource("history.txt").toURI());
-            jsonArray2 = Files.readAllLines(path2, Charset.defaultCharset());
-            for (String s : jsonArray) {
-                WeatherData data = gson.fromJson(s, WeatherData.class);
-                WeatherData updatedData = gson.fromJson(GET(data.getCityName()), WeatherData.class);
-                weatherLocations.put(updatedData.getCityName(), updatedData);
-                favorites.put(updatedData.getCityName(), updatedData);
-            }
-            for (String s2 : jsonArray2) {
-                if (s2.isEmpty()) break;
-                Triple<String, String, Number> data2 = gson.fromJson(s2, Triple.class);
-                history.add(new Triple<>(data2.getFirst(), data2.getSecond(), data2.getThird()));
-            }
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+
+        for (String s : DataStorer.loadFromTextfile("cache.txt")) {
+            WeatherData data = gson.fromJson(s, WeatherData.class);
+            WeatherData updatedData = gson.fromJson(GET(data.getCityName()), WeatherData.class);
+            weatherLocations.put(updatedData.getCityName(), updatedData);
+            favorites.put(updatedData.getCityName(), updatedData);
+        }
+        for (String s2 : DataStorer.loadFromTextfile("history.txt")) {
+            if (s2.isEmpty()) break;
+            Triple<String, String, Number> data2 = gson.fromJson(s2, Triple.class);
+            history.add(new Triple<>(data2.getFirst(), data2.getSecond(), data2.getThird()));
         }
     }
 
@@ -171,37 +150,34 @@ public class RequestHandler {
     }
 
 
-    private void updateHistory(String city) throws IllegalArgumentException,IllegalStateException {
-
+    private void updateHistory(String city) throws IllegalStateException {
         if (graphItems.containsKey(city)) {
             throw new IllegalStateException();
         }
 
-        WeatherData data = weatherLocations.get(city);
-
+        WeatherData data = fetchNewData(city);
         history.add(new Triple<>(city, data.getDate(), Integer.valueOf(data.getTemperature())));
+
     }
 
-    private void updateHistory(String city, String alias) throws IllegalArgumentException,IllegalStateException {
-
+    private void updateHistory(String city, String alias) throws IllegalArgumentException, IllegalStateException {
         if (graphItems.containsKey(city) || graphItems.containsKey(alias)) {
             throw new IllegalStateException();
         }
 
-        WeatherData data = weatherLocations.get(city);
-        WeatherData aliasdata = weatherLocations.get(alias);
+        WeatherData data = fetchNewData(city);
+        WeatherData aliasdata = fetchNewData(city);
 
-        if (data == null && aliasdata == null){
+        if (data == null && aliasdata == null) {
             throw new IllegalArgumentException();
-        }
-        else{
-            if (data != null){
+        } else {
+            if (data != null) {
                 history.add(new Triple<>(city, data.getDate(), Integer.valueOf(data.getTemperature())));
             }
-            if (aliasdata != null){
+            if (aliasdata != null) {
                 history.add(new Triple<>(city, aliasdata.getDate(), Integer.valueOf(aliasdata.getTemperature())));
             }
-            aliasNames.put(alias,city);
+            aliasNames.put(alias, city);
         }
     }
 }
