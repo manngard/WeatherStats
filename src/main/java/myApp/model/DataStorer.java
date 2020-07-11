@@ -16,7 +16,7 @@ import java.util.List;
  * The specification for a DataStorer class responsible for reading and writing JSON to and from .txt files
  */
 
-public class DataStorer {
+class DataStorer {
 
     /**
      *

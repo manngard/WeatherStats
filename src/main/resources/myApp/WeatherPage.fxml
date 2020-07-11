@@ -11,6 +11,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
@@ -18,66 +19,67 @@
    <children>
       <StackPane prefHeight="150.0" prefWidth="200.0">
          <children>
-            <AnchorPane fx:id="detailContainerPane" onMouseClicked="#hideDetails" prefHeight="200.0" prefWidth="200.0">
+            <AnchorPane fx:id="fadePane" onMouseClicked="#hideDetails" opacity="0.6" prefHeight="540.0" prefWidth="815.0" scaleX="1.05" scaleY="1.05" style="-fx-background-color: #000000;" />
+            <AnchorPane fx:id="detailPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#ignoreClick" prefHeight="429.0" prefWidth="709.0" style="-fx-background-color: #ffffff;">
                <children>
-                  <AnchorPane fx:id="detailPane" layoutX="100.0" layoutY="135.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#ignoreClick" prefHeight="350.0" prefWidth="600.0" style="-fx-background-color: #ffffff;">
-                     <children>
-                        <Label fx:id="detailCityLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="28.0" layoutY="14.0" prefHeight="53.0" prefWidth="270.0" text="City">
-                           <font>
-                              <Font size="36.0" />
-                           </font>
-                        </Label>
-                        <ImageView fx:id="closeDetails" fitHeight="28.0" fitWidth="27.0" layoutX="565.0" layoutY="10.0" onMouseClicked="#hideDetails" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@close.png" />
-                           </image>
-                        </ImageView>
-                        <LineChart fx:id="weatherDataGraph" layoutX="1.0" layoutY="57.0" prefHeight="290.0" prefWidth="600.0">
-                          <xAxis>
-                            <CategoryAxis fx:id="dateAxis" side="BOTTOM" />
-                          </xAxis>
-                          <yAxis>
-                            <NumberAxis fx:id="temperatureAxis" lowerBound="-50.0" side="LEFT" upperBound="50.0" />
-                          </yAxis>
-                        </LineChart>
-                     </children>
-                  </AnchorPane>
-                  <TextField fx:id="seriesAdder" layoutX="426.0" layoutY="156.0" onKeyPressed="#updateDetails" onMouseClicked="#enterSeriesAdder" onMouseDragEntered="#enterSearchBar" prefHeight="38.0" prefWidth="188.0" text="Add another city">
+                  <TextField fx:id="seriesAdder" layoutX="375.0" layoutY="19.0" onKeyPressed="#updateDetails" onMouseClicked="#enterSeriesAdder" onMouseDragEntered="#enterSearchBar" prefHeight="44.0" prefWidth="283.0" text="Add another city">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </TextField>
+                  <Label fx:id="detailCityLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="28.0" layoutY="14.0" prefHeight="53.0" prefWidth="317.0" text="City">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="closeDetails" fitHeight="20.0" fitWidth="28.0" layoutX="685.0" layoutY="5.0" onMouseClicked="#hideDetails" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@close.png" />
+                     </image>
+                  </ImageView>
+                  <LineChart fx:id="weatherDataGraph" layoutX="1.0" layoutY="57.0" prefHeight="364.0" prefWidth="697.0">
+                    <xAxis>
+                      <CategoryAxis fx:id="dateAxis" side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis fx:id="temperatureAxis" lowerBound="-50.0" side="LEFT" upperBound="50.0" />
+                    </yAxis>
+                  </LineChart>
                </children>
             </AnchorPane>
             <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="815.0">
                <children>
+                  <Pane prefHeight="78.0" prefWidth="815.0" scaleX="1.05" style="-fx-background-color: #FFFFFF;">
+                     <children>
+                        <TextField fx:id="searchBar" layoutX="195.0" layoutY="17.0" onKeyPressed="#search" onMouseClicked="#enterSearchBar" prefHeight="40.0" prefWidth="450.0" text="Search for your city">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="searchButton" layoutX="635.0" layoutY="15.0" mnemonicParsing="false" onAction="#searchByButton" prefHeight="47.0" prefWidth="57.0">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@searchicon.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <ImageView fx:id="logoImg" fitHeight="62.0" fitWidth="88.0" layoutX="27.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@logo.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </Pane>
                   <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutY="76.0" prefHeight="469.0" prefWidth="827.0" vbarPolicy="NEVER">
                      <content>
                         <FlowPane fx:id="cityInfoPane" prefHeight="559.0" prefWidth="947.0" />
                      </content>
                   </ScrollPane>
-                  <TextField fx:id="searchBar" layoutX="183.0" layoutY="16.0" onKeyPressed="#search" onMouseClicked="#enterSearchBar" prefHeight="40.0" prefWidth="450.0" text="Search for your city">
-                     <font>
-                        <Font size="20.0" />
-                     </font>
-                  </TextField>
-                  <Button fx:id="searchButton" layoutX="633.0" layoutY="14.0" mnemonicParsing="false" onAction="#searchByButton" prefHeight="47.0" prefWidth="57.0">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                     <graphic>
-                        <ImageView fitHeight="24.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@searchicon.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </Button>
-                  <ImageView fx:id="logoImg" fitHeight="62.0" fitWidth="88.0" layoutX="6.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@logo.png" />
-                     </image>
-                  </ImageView>
                </children>
             </AnchorPane>
          </children>

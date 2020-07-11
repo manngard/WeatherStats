@@ -58,7 +58,7 @@ public class WeatherPageController implements Initializable {
     private AnchorPane detailPane;
 
     @FXML
-    private AnchorPane detailContainerPane;
+    private AnchorPane fadePane;
 
     @FXML
     private ScrollPane scrollPane;
@@ -98,7 +98,8 @@ public class WeatherPageController implements Initializable {
 
     @FXML
     void hideDetails() {
-        detailContainerPane.toBack();
+        detailPane.toBack();
+        fadePane.toBack();
 
         weatherDataGraph.getData().clear();
         model.cleargraphItems();
@@ -229,7 +230,8 @@ public class WeatherPageController implements Initializable {
             }
 
             model.addGraphItem(capitalizeFully(city));
-            detailContainerPane.toFront();
+            fadePane.toFront();
+            detailPane.toFront();
         }
         catch(IllegalArgumentException e){
             displayError(seriesAdder,cityNotFoundErrorMessage);

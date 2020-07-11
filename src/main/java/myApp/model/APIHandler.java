@@ -16,7 +16,7 @@ import java.io.IOException;
  *  which is responsible for sending requests to the OpenWeatherMap API and providing the JSON-reply
  */
 
-public class APIHandler {
+class APIHandler {
     private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
 
