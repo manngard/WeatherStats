@@ -1,106 +1,72 @@
 package myApp.temperaturedata;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import kotlin.Triple;
 import myApp.Pair;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-public class RequestHandler {
-    private final OkHttpClient client = new OkHttpClient();
+/**
+ * The specification for a Model class, this class is responsible for encapsulating the application's data
+ */
+
+public class Model {
+    private final APIHandler handler = new APIHandler();
+    private JSONParser <WeatherData> parser = new JSONParser<>();
+    Gson gson = new Gson();
     private final Map<String, WeatherData> weatherLocations = new HashMap<>();
     private final Map<String, WeatherData> graphItems = new HashMap<>();
     private final Map<String, WeatherData> favorites = new HashMap<>();
     private final Map<String, String> aliasNames = new HashMap<>();
     private final Set<Triple<String, String, Number>> history = new HashSet<>();
 
-    private String GET(String location) {
-        String parsedResponse = null;
-
-        HttpUrl.Builder httpBuilder = HttpUrl.parse("https://api.openweathermap.org/data/2.5/forecast").newBuilder();
-        httpBuilder.addQueryParameter("q", location);
-        httpBuilder.addQueryParameter("cnt", "1");
-        httpBuilder.addQueryParameter("appid", "f28077bccf0b9836ababfa545de25285");
-
-        Request request = new Request.Builder()
-                .url(httpBuilder.build())
-                .build();
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonParser parser = new JsonParser();
-
-        try (Response response = client.newCall(request).execute()) {
-            JsonElement dataResponse = parser.parse(response.body().string());
-            parsedResponse = gson.toJson(dataResponse);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return parsedResponse;
-    }
-
-    private List<String> objectsToJson(List<Object> data) {
-        Gson gson = new Gson();
-        List<String> jsonArray = new ArrayList<>();
-        for (Object object : data) {
-            String json = gson.toJson(object);
-            jsonArray.add(json);
-        }
-        return jsonArray;
-    }
-
     public void createWeatherDataObject(String location, boolean inGraph) throws IllegalArgumentException, IllegalStateException {
-        Gson gson = new Gson();
         String city = aliasNames.getOrDefault(location, location);
-        WeatherData data = fetchNewData(city);
-
-        if (!inGraph) {
-            weatherLocations.put(data.getCityName(), data);
-        }
+        WeatherData data = parser.objectFromJson(handler.fetchNewData(city), WeatherData.class);
 
         if (!data.getCityName().equals(city)) {
             updateHistory(city, data.getCityName());
         } else {
             updateHistory(data.getCityName());
         }
+        if (!inGraph) {
+            weatherLocations.put(data.getCityName(), data);
+        }
         cacheDataObjects();
     }
 
-    private WeatherData fetchNewData(String location) throws IllegalArgumentException {
-        Gson gson = new Gson();
-        WeatherData data;
-        try {
-            String response = GET(location);
-            data = gson.fromJson(response, WeatherData.class);
-        } catch (JsonSyntaxException e) {
-            throw new IllegalArgumentException();
-        }
-        return data;
-    }
+
 
     private void cacheDataObjects() {
-        DataStorer.saveAsTextfile(objectsToJson(Arrays.asList(favorites.values().toArray())), "cache.txt");
-        DataStorer.saveAsTextfile(objectsToJson(new ArrayList<>(history)), "history.txt");
+        DataStorer.saveAsTextfile(parser.objectsToJson(Arrays.asList(favorites.values().toArray())), "cache.txt");
+        DataStorer.saveAsTextfile(parser.objectsToJson(new ArrayList<>(history)), "history.txt");
     }
 
     public void loadDataObjects() {
-        Gson gson = new Gson();
-
         for (String s : DataStorer.loadFromTextfile("cache.txt")) {
-            WeatherData data = gson.fromJson(s, WeatherData.class);
-            WeatherData updatedData = gson.fromJson(GET(data.getCityName()), WeatherData.class);
-            weatherLocations.put(updatedData.getCityName(), updatedData);
-            favorites.put(updatedData.getCityName(), updatedData);
+            try{
+                WeatherData data = parser.objectFromJson(s, WeatherData.class);
+                WeatherData updatedData = parser.objectFromJson(handler.fetchNewData(data.getCityName()),WeatherData.class);
+                weatherLocations.put(updatedData.getCityName(), updatedData);
+                favorites.put(updatedData.getCityName(), updatedData);
+            }
+            catch(JsonSyntaxException e){
+                e.printStackTrace();
+            }
+
         }
         for (String s2 : DataStorer.loadFromTextfile("history.txt")) {
             if (s2.isEmpty()) break;
-            Triple<String, String, Number> data2 = gson.fromJson(s2, Triple.class);
-            history.add(new Triple<>(data2.getFirst(), data2.getSecond(), data2.getThird()));
+            try{
+                Triple<String, String, Number> data2 = gson.fromJson(s2, Triple.class);
+                history.add(new Triple<>(data2.getFirst(), data2.getSecond(), data2.getThird()));
+            }
+            catch(JsonSyntaxException e){
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -155,7 +121,7 @@ public class RequestHandler {
             throw new IllegalStateException();
         }
 
-        WeatherData data = fetchNewData(city);
+        WeatherData data = parser.objectFromJson(handler.fetchNewData(city),WeatherData.class);
         history.add(new Triple<>(city, data.getDate(), Integer.valueOf(data.getTemperature())));
 
     }
@@ -165,8 +131,8 @@ public class RequestHandler {
             throw new IllegalStateException();
         }
 
-        WeatherData data = fetchNewData(city);
-        WeatherData aliasdata = fetchNewData(city);
+        WeatherData data = parser.objectFromJson(handler.fetchNewData(city), WeatherData.class);
+        WeatherData aliasdata = parser.objectFromJson(handler.fetchNewData(alias), WeatherData.class); //?????
 
         if (data == null && aliasdata == null) {
             throw new IllegalArgumentException();

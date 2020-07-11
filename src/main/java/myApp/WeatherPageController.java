@@ -14,7 +14,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
-import myApp.temperaturedata.RequestHandler;
+import myApp.temperaturedata.Model;
 import myApp.temperaturedata.WeatherData;
 
 import java.net.URL;
@@ -27,7 +27,7 @@ import static org.apache.commons.text.WordUtils.capitalizeFully;
  */
 
 public class WeatherPageController implements Initializable {
-    private final RequestHandler handler = new RequestHandler();
+    private final Model model = new Model();
     private final List<String> errorMessages = new ArrayList<>();
     private final Set <String> dates = new TreeSet<>(new Comparator<String>() {
         @Override
@@ -101,7 +101,7 @@ public class WeatherPageController implements Initializable {
         detailContainerPane.toBack();
 
         weatherDataGraph.getData().clear();
-        handler.cleargraphItems();
+        model.cleargraphItems();
 
         dates.clear();
         hideDates = false;
@@ -132,7 +132,7 @@ public class WeatherPageController implements Initializable {
 
     private void searchQuery() {
         try {
-            handler.createWeatherDataObject(capitalizeFully(searchBar.getText()), false);
+            model.createWeatherDataObject(capitalizeFully(searchBar.getText()), false);
             populateCityInfoPane();
         } catch (IllegalArgumentException e) {
             displayError(searchBar,cityNotFoundErrorMessage);
@@ -148,7 +148,7 @@ public class WeatherPageController implements Initializable {
         temperatureAxis.setLabel("Temperature(C)");
         dateAxis.setLabel("Date");
 
-        handler.loadDataObjects();
+        model.loadDataObjects();
         populateCityInfoPane();
 
         searchBarHelpMessage = "Start by searching for a city";
@@ -183,10 +183,10 @@ public class WeatherPageController implements Initializable {
                 return o1.getWeather().getCityName().compareTo(o2.getWeather().getCityName());
             }
         });
-        for (WeatherData d : handler.getFavorites()) {
+        for (WeatherData d : model.getFavorites()) {
             cityInfo.add(new CityInfo(d, controller, true));
         }
-        for (WeatherData d : handler.getWeatherLocations()) {
+        for (WeatherData d : model.getWeatherLocations()) {
             cityInfo.add(new CityInfo(d, controller, false));
         }
         return cityInfo;
@@ -195,7 +195,7 @@ public class WeatherPageController implements Initializable {
 
     void showDetails(String city) {
         try{
-            handler.createWeatherDataObject(city, true);
+            model.createWeatherDataObject(city, true);
 
             if (weatherDataGraph.getData().size() == 0){
                 detailCityLabel.setText(city);
@@ -206,7 +206,7 @@ public class WeatherPageController implements Initializable {
 
             XYChart.Series <String,Number> series = new XYChart.Series();
             series.setName(city);
-            Collection<Pair<String, Number>> weatherhistory = handler.getHistory(city);
+            Collection<Pair<String, Number>> weatherhistory = model.getHistory(city);
 
             for (Pair p : weatherhistory) {
                 XYChart.Data datapoint = new XYChart.Data(p.getFirst(), p.getSecond());
@@ -228,7 +228,7 @@ public class WeatherPageController implements Initializable {
                 Tooltip.install(entry.getNode(), t);
             }
 
-            handler.addGraphItem(capitalizeFully(city));
+            model.addGraphItem(capitalizeFully(city));
             detailContainerPane.toFront();
         }
         catch(IllegalArgumentException e){
@@ -253,15 +253,15 @@ public class WeatherPageController implements Initializable {
     }
 
     void addFavorite(String city) {
-        handler.addFavorite(city);
+        model.addFavorite(city);
     }
 
     void removeFavorite(String city) {
-        handler.removeFavorite(city);
+        model.removeFavorite(city);
     }
 
     void removeCityInfo(CityInfo info) {
-        handler.removeWeatherDataObject(info.getWeather());
+        model.removeWeatherDataObject(info.getWeather());
         cityInfoPane.getChildren().remove(info);
     }
 
