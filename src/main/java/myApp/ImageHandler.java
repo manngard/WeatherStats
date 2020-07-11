@@ -7,8 +7,8 @@ import javafx.scene.image.Image;
  */
 
 public class ImageHandler {
+
     /**
-     *
      * @param id - The name of jpg to be loaded
      * @return - The resource Image associated with the given id
      */

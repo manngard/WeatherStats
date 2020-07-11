@@ -12,8 +12,17 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The specification for a DataStorer class responsible for reading and writing JSON to and from .txt files
+ */
+
 public class DataStorer {
 
+    /**
+     *
+     * @param filename - The name of the .txt file to read
+     * @return - The contents of the file as a JSONarray
+     */
     static List <String> loadFromTextfile(String filename) {
         List <String> jsonArray = new ArrayList<>();
         try{
@@ -26,6 +35,12 @@ public class DataStorer {
 
         return jsonArray;
     }
+
+    /**
+     *
+     * @param jsonArray - The JSONarray to be saved
+     * @param filename - The .txt file the JSONarray will be saved in
+     */
 
     static void saveAsTextfile(List <String> jsonArray, String filename) {
         try {

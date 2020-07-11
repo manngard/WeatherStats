@@ -7,12 +7,16 @@ import myApp.Pair;
 
 import java.util.*;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The specification for a Model class, this class is responsible for encapsulating the application's data
  */
 
 public class Model {
+    private static final Logger LOGGER = Logger.getLogger( Model.class.getName() );
+
     private final APIHandler handler = new APIHandler();
     private JSONParser <WeatherData> parser = new JSONParser<>();
     Gson gson = new Gson();
@@ -24,7 +28,13 @@ public class Model {
 
     public void createWeatherDataObject(String location, boolean inGraph) throws IllegalArgumentException, IllegalStateException {
         String city = aliasNames.getOrDefault(location, location);
-        WeatherData data = parser.objectFromJson(handler.fetchNewData(city), WeatherData.class);
+        WeatherData data;
+        try{
+           data = parser.objectFromJson(handler.fetchNewData(city), WeatherData.class);
+        }
+        catch(JsonSyntaxException j){
+            throw new IllegalArgumentException();
+        }
 
         if (!data.getCityName().equals(city)) {
             updateHistory(city, data.getCityName());
@@ -34,6 +44,7 @@ public class Model {
         if (!inGraph) {
             weatherLocations.put(data.getCityName(), data);
         }
+
         cacheDataObjects();
     }
 
@@ -53,7 +64,7 @@ public class Model {
                 favorites.put(updatedData.getCityName(), updatedData);
             }
             catch(JsonSyntaxException e){
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "API call could not find name of saved city: " + s);
             }
 
         }
@@ -64,7 +75,7 @@ public class Model {
                 history.add(new Triple<>(data2.getFirst(), data2.getSecond(), data2.getThird()));
             }
             catch(JsonSyntaxException e){
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "API call could not find name of saved city: " + s2);
             }
 
         }
@@ -130,19 +141,14 @@ public class Model {
         if (graphItems.containsKey(city) || graphItems.containsKey(alias)) {
             throw new IllegalStateException();
         }
-
-        WeatherData data = parser.objectFromJson(handler.fetchNewData(city), WeatherData.class);
-        WeatherData aliasdata = parser.objectFromJson(handler.fetchNewData(alias), WeatherData.class); //?????
-
-        if (data == null && aliasdata == null) {
-            throw new IllegalArgumentException();
-        } else {
-            if (data != null) {
-                history.add(new Triple<>(city, data.getDate(), Integer.valueOf(data.getTemperature())));
-            }
-            if (aliasdata != null) {
-                history.add(new Triple<>(city, aliasdata.getDate(), Integer.valueOf(aliasdata.getTemperature())));
-            }
+        try{
+            WeatherData data = parser.objectFromJson(handler.fetchNewData(city), WeatherData.class);
+            history.add(new Triple<>(city, data.getDate(), Integer.valueOf(data.getTemperature())));
+            aliasNames.put(alias, city);
+        }
+        catch(JsonSyntaxException j) {
+            WeatherData aliasdata = parser.objectFromJson(handler.fetchNewData(alias), WeatherData.class);
+            history.add(new Triple<>(city, aliasdata.getDate(), Integer.valueOf(aliasdata.getTemperature())));
             aliasNames.put(alias, city);
         }
     }
