@@ -14,8 +14,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
-import myApp.temperaturedata.Model;
-import myApp.temperaturedata.WeatherData;
+import myApp.model.Model;
+import myApp.model.data.WeatherData;
 
 import java.net.URL;
 import java.util.*;

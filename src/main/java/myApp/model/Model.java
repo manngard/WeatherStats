@@ -1,9 +1,10 @@
-package myApp.temperaturedata;
+package myApp.model;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import kotlin.Triple;
 import myApp.Pair;
+import myApp.model.data.WeatherData;
 
 import java.util.*;
 import java.util.List;
@@ -64,7 +65,7 @@ public class Model {
                 favorites.put(updatedData.getCityName(), updatedData);
             }
             catch(JsonSyntaxException e){
-                LOGGER.log(Level.WARNING, "API call could not find name of saved city: " + s);
+                LOGGER.log(Level.WARNING, "API call could not find saved city: " + s);
             }
 
         }
@@ -75,7 +76,7 @@ public class Model {
                 history.add(new Triple<>(data2.getFirst(), data2.getSecond(), data2.getThird()));
             }
             catch(JsonSyntaxException e){
-                LOGGER.log(Level.WARNING, "API call could not find name of saved city: " + s2);
+                LOGGER.log(Level.WARNING, "API call could not find saved city: " + s2);
             }
 
         }

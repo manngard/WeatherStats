@@ -1,7 +1,9 @@
-package myApp.temperaturedata;
+package myApp.model.data;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import myApp.model.data.City;
+import myApp.model.data.List;
 
 public class WeatherData {
 
@@ -16,7 +18,7 @@ public class WeatherData {
     private Integer cnt;
     @SerializedName("list")
     @Expose
-    private java.util.List<myApp.temperaturedata.List> list = null;
+    private java.util.List<List> list = null;
     @SerializedName("city")
     @Expose
     private City city;
@@ -61,7 +63,7 @@ public class WeatherData {
         return list.get(0).getWeather().get(0).getMain();
     }
 
-    public void setList(java.util.List<myApp.temperaturedata.List> list) {
+    public void setList(java.util.List<List> list) {
         this.list = list;
     }
 

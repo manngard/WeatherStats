@@ -1,4 +1,4 @@
-package myApp.temperaturedata;
+package myApp.model.data;
 
 
 import com.google.gson.annotations.Expose;

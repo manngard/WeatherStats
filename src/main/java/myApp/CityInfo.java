@@ -9,7 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
-import myApp.temperaturedata.WeatherData;
+import myApp.model.data.WeatherData;
 
 import java.io.IOException;
 

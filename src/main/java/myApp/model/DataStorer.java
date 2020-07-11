@@ -1,4 +1,4 @@
-package myApp.temperaturedata;
+package myApp.model;
 
 import myApp.App;
 

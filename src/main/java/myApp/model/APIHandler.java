@@ -1,4 +1,4 @@
-package myApp.temperaturedata;
+package myApp.model;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -19,6 +19,12 @@ import java.io.IOException;
 public class APIHandler {
     private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
+
+    /**
+     *
+     * @param location - The city name to get weather forecast for
+     * @return - The String API-response in JSON format describing WeatherData objects
+     */
 
     private String GET(String location) {
         String parsedResponse = null;
@@ -42,6 +48,13 @@ public class APIHandler {
         }
         return parsedResponse;
     }
+
+    /**
+     *
+     * @param location - The city name to fetch new WeatherData for
+     * @return - The String API-response in JSON format describing WeatherData objects
+     * @throws IllegalArgumentException if API could not find a city matching location
+     */
 
     String fetchNewData(String location) throws IllegalArgumentException {
         String response;
