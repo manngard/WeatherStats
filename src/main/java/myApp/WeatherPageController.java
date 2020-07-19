@@ -96,6 +96,10 @@ public class WeatherPageController implements Initializable {
         clearTextfield(seriesAdder);
     }
 
+    /**
+     * Hides the detailPane and resets it for next use
+     */
+
     @FXML
     void hideDetails() {
         detailPane.toBack();
@@ -111,6 +115,12 @@ public class WeatherPageController implements Initializable {
         seriesAdder.setText(seriesAdderHelpMessage);
 
     }
+
+    /**
+     * Attempts to add the details for entered city into graph
+     *
+     * @param event - The KeyEvent that triggered a update of the detailPane
+     */
 
     @FXML
     void updateDetails(KeyEvent event) {
@@ -130,6 +140,11 @@ public class WeatherPageController implements Initializable {
             searchQuery();
         }
     }
+
+    /**
+     * Attempts to create a new WeatherData object in model. If successful adds it to the view
+     * else shows error message to user
+     */
 
     private void searchQuery() {
         try {
@@ -170,12 +185,23 @@ public class WeatherPageController implements Initializable {
         scrollPane.setFitToHeight(true);
     }
 
+    /**
+     * Populates the cityInfoPane with appropriate CityInfo objects
+     */
+
     private void populateCityInfoPane() {
         cityInfoPane.getChildren().clear();
         for (CityInfo c : getCityInfo(this)) {
             cityInfoPane.getChildren().add(c);
         }
     }
+
+    /**
+     * Creates a new CityInfo object for each favorite city and city added previously in the current application session
+     *
+     * @param controller - The parent of the created objects
+     * @return
+     */
 
     private Set<CityInfo> getCityInfo(WeatherPageController controller) {
         Set<CityInfo> cityInfo = new TreeSet<>(new Comparator<CityInfo>() {
@@ -193,6 +219,11 @@ public class WeatherPageController implements Initializable {
         return cityInfo;
     }
 
+    /**
+     * Adds the chosen city to active graph plotting it in the detailPane
+     *
+     * @param city - The city to show detailPane and add to graph
+     */
 
     void showDetails(String city) {
         try{
@@ -241,12 +272,24 @@ public class WeatherPageController implements Initializable {
         }
     }
 
+    /**
+     * If the textfield contains a error, clears it and sets text to black color
+     * @param textfield - the textfield to be cleared
+     */
+
     private void clearTextfield(TextField textfield){
         if (errorMessages.contains(textfield.getText())) {
             textfield.setText("");
             textfield.setStyle("-fx-text-fill: black;");
         }
     }
+
+    /**
+     * Displays the chosen error in the chosen textfield using red color
+     *
+     * @param textfield - the textfield in which to display error
+     * @param error - the error to be displayed
+     */
 
     private void displayError(TextField textfield, String error){
         textfield.setText(error);
